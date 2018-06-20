@@ -33,7 +33,7 @@ app.get('/api/lastTenMatches/:summonerName', (req, res) => {
     result.runes = GetRuneNames(participant, runes);
     result.champion = GetChampionName(participant.championId, champions);
     result.KDA = GetKDA(participant);
-    //result.finalItems = GetFinalItems(participant, items);
+    result.finalItems = GetFinalItems(participant, items);
     
     return result;
   });
