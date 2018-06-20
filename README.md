@@ -18,6 +18,7 @@
     * sanatize input so it accepts spaces in name
 
 * Other
+  * Get rid of all the node modules you're not actually using
   * deploy somewhere (heroku, azure)
 
 
@@ -31,4 +32,4 @@
   * Would love to learn/implement if I had more time
 * server.js is getting very spaghetti-y
   * My general coding style is to brute-force first, refactor later
-  * For larger projects like this, it's only handicapping me. Need more experience so I can write nice code sooner
+  * For larger projects like this, it's only handicapping me. Need more JS experience so I can write nice code sooner
