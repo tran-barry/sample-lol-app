@@ -7,7 +7,6 @@
   * show champion final level
   * show cs
   * show cs/min
-  * cache static info (items, champions, runes)
   * split up server.js into smaller classes
   * don't hardcode api_key into code
 
