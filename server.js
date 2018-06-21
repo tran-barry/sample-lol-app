@@ -7,7 +7,7 @@ const port = process.env.PORT || 5000;
 var client = new Client();
 var xhttp = new XMLHttpRequest();
 const riotUrl = 'https://na1.api.riotgames.com';
-const apiKey = 'REPLACE ME'
+const apiKey = 'RGAPI-d62433f4-5204-4a11-8011-2dcbc330df72';
 
 app.get('/api/lastTenMatches/:summonerName', (req, res) => {
   var summoner = GetSummoner(req.param('summonerName'));
@@ -42,8 +42,7 @@ app.get('/api/lastTenMatches/:summonerName', (req, res) => {
 })
 
 function GetRuneInfo() {
-  var path = `lol/static-data/v3/reforged-runes?api_key=${apiKey}`;
-  var url = `${riotUrl}/${path}`;
+  var url = `https://ddragon.leagueoflegends.com/cdn/8.11.1/data/en_US/runesReforged.json`;
 
   xhttp.open("GET", url, false);
   xhttp.setRequestHeader("Content-type", "application/json");
@@ -51,26 +50,33 @@ function GetRuneInfo() {
 
   var response = JSON.parse(xhttp.responseText);
 
-  return response;
+  // Build a flat list of runes. For whatever reason, concat wouldn't work, so had to do a bunch of for-loops.
+  var runes = [];
+  for (var i = 0; i < response.length; ++i) {
+    for (var j = 0; j < response[i].slots.length; ++j) {
+      for (var k = 0; k < response[i].slots[j].runes.length; k++) {
+        runes.push(response[i].slots[j].runes[k]);
+      }
+    }
+  }
+
+  return runes;
 }
 
 function GetChampionInfo() {
-  var path = `lol/static-data/v3/champions?api_key=${apiKey}`;
-  var url = `${riotUrl}/${path}`;
+  var url = `https://ddragon.leagueoflegends.com/cdn/8.11.1/data/en_US/champion.json`;
 
   xhttp.open("GET", url, false);
   xhttp.setRequestHeader("Content-type", "application/json");
   xhttp.send();
 
   var response = JSON.parse(xhttp.responseText);
-  console.log(response);
 
   return response.data;
 }
 
 function GetItemInfo() {
-  var path = `lol/static-data/v3/items?api_key=${apiKey}`;
-  var url = `${riotUrl}/${path}`;
+  var url = `https://ddragon.leagueoflegends.com/cdn/8.11.1/data/en_US/item.json`;
 
   xhttp.open("GET", url, false);
   xhttp.setRequestHeader("Content-type", "application/json");
@@ -139,7 +145,8 @@ function GetRuneName(runeId, runes) {
   return rune.name;
 }
 function GetChampionName(championId, champions) {
-  var champion = Object.values(champions).find((ch) => ch.id === championId);
+  var champion = Object.values(champions).find((ch) => ch.key === championId.toString());
+  console.log(champion);
   return champion.name;
 }
 function GetKDA(participant) { 
@@ -161,7 +168,7 @@ function GetFinalItems(participant, items) {
   return itemNames;
 }
 function GetItemName(itemId, items) {
-  var item = Object.values(items).find((it) => it.id === itemId);
+  var item = items[`${itemId}`];
   console.log(item);
   return item.name;
 }
