@@ -4,7 +4,6 @@ var Client = require('node-rest-client').Client;
 
 const app = express();
 const port = process.env.PORT || 5000;
-var client = new Client();
 var xhttp = new XMLHttpRequest();
 const riotUrl = 'https://na1.api.riotgames.com';
 const apiKey = 'RGAPI-d62433f4-5204-4a11-8011-2dcbc330df72';
@@ -15,6 +14,7 @@ app.get('/api/lastTenMatches/:summonerName', (req, res) => {
   var matchDetails = matches.map((match) => {
     return GetMatchDetails(match.gameId);
   });
+  
   
   // No need to get this multiple times, should just cache this info
   var runes = GetRuneInfo();
@@ -27,13 +27,16 @@ app.get('/api/lastTenMatches/:summonerName', (req, res) => {
     var participantIdentity = match.participantIdentities.find((id) => id.player.accountId  === summoner.accountId);
     var participant = match.participants.find((id) => id.participantId === participantIdentity.participantId);
     var team = match.teams.find((id) => id.teamId === participant.teamId);
-
+    
     result.outcome = GetOutcome(team);
     result.matchLength = GetMatchLength(match);
     result.runes = GetRuneNames(participant, runes);
     result.champion = GetChampionName(participant.championId, champions);
     result.KDA = GetKDA(participant);
     result.finalItems = GetFinalItems(participant, items);
+    result.finalLevel = GetFinalLevel(participant);
+    result.creepScore = GetCreepScore(participant);
+    result.creepScorePerMin = GetCreepScorePerMin(participant, match);
     
     return result;
   });
@@ -102,7 +105,7 @@ function GetSummoner(summonerName) {
 
 function GetSummonerMatches(summonerId) {
   //var path = `lol/match/v3/matchlists/by-account/${summonerId}?api_key=${apiKey}&endIndex=10`;
-  var path = `lol/match/v3/matchlists/by-account/${summonerId}?api_key=${apiKey}&endIndex=1`;
+  var path = `lol/match/v3/matchlists/by-account/${summonerId}?api_key=${apiKey}&endIndex=2`;
   var url = `${riotUrl}/${path}`;
 
   xhttp.open("GET", url, false);
@@ -146,7 +149,6 @@ function GetRuneName(runeId, runes) {
 }
 function GetChampionName(championId, champions) {
   var champion = Object.values(champions).find((ch) => ch.key === championId.toString());
-  console.log(champion);
   return champion.name;
 }
 function GetKDA(participant) { 
@@ -168,9 +170,24 @@ function GetFinalItems(participant, items) {
   return itemNames;
 }
 function GetItemName(itemId, items) {
-  var item = items[`${itemId}`];
-  console.log(item);
-  return item.name;
+  if(itemId === 0) {
+    return '';
+  }
+  else {
+    var item = items[`${itemId}`];
+    return item.name;
+  }
+}
+function GetFinalLevel(participant) {
+  return participant.stats.champLevel;
+}
+function GetCreepScore(participant) {
+  return participant.stats.totalMinionsKilled;
+}
+function GetCreepScorePerMin(participant, match) {
+  var cs = GetCreepScore(participant);
+  var min = GetMatchLength(match) / 60;
+  return cs / min;
 }
 
 app.listen(port, () => console.log(`Listening on port ${port}`));

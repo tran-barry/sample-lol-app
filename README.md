@@ -3,16 +3,11 @@
 ** NOTE: I can always go to `/api/lastTenMatches/<summonerName>` if I want to see what my backend's returning me
 
 * Backend
-  * Show items bought
-  * show champion final level
-  * show cs
-  * show cs/min
   * split up server.js into smaller classes
   * don't hardcode api_key into code
 
 * Frontend
   * actually render nice html
-  * show all info from backend
   * allow user to input summoner name
     * sanatize input so it accepts spaces in name
 
@@ -32,3 +27,6 @@
 * server.js is getting very spaghetti-y
   * My general coding style is to brute-force first, refactor later
   * For larger projects like this, it's only handicapping me. Need more JS experience so I can write nice code sooner
+* I really haven't done css/html
+  * I know the basics, but haven't really made anything that looks nice
+    * I've only made small changes to an existing css, or troubleshoot an existing one
