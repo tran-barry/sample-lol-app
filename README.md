@@ -8,8 +8,6 @@
 
 * Frontend
   * actually render nice html
-  * allow user to input summoner name
-    * sanatize input so it accepts spaces in name
 
 * Other
   * Get rid of all the node modules you're not actually using
@@ -30,3 +28,12 @@
 * I really haven't done css/html
   * I know the basics, but haven't really made anything that looks nice
     * I've only made small changes to an existing css, or troubleshoot an existing one
+
+
+# DEPLOYMENT (theory)
+
+* Replace the `proxy` element of `/client/package.json` with the deployment site and port.
+* Configure azure (or heroku) to use the correct version of Node.js
+* Since there are 2 entry points (`server.js` for the express server, `/client/src/App.js` for the client app), I'd have to configure the site to handle this
+* Just to make life easier, I'd probably FTP the files up manually first. Future deployments may call for a script, or I could set the site up to detect changes in github
+  * I'll definitely need to make sure I don't hard-code the API key in my code, instead using the application setting to set it.
