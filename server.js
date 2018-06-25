@@ -6,23 +6,29 @@ const app = express();
 const port = process.env.PORT || 5000;
 var xhttp = new XMLHttpRequest();
 const riotUrl = 'https://na1.api.riotgames.com';
-const apiKey = 'RGAPI-d62433f4-5204-4a11-8011-2dcbc330df72';
+const apiKey = 'RGAPI-02036710-5395-4e26-9dd9-55e51aa572d1';
 
 app.get('/api/lastTenMatches/:summonerName', (req, res) => {
+  console.log(`Getting info for summoner`);
   var summoner = GetSummoner(req.param('summonerName'));
+
+  console.log(`Getting matches for ${summoner.accountId}`);
   var matches = GetSummonerMatches(summoner.accountId);
+
   var matchDetails = matches.map((match) => {
+    console.log(`Getting details for match ${match.gameId}`)
     return GetMatchDetails(match.gameId);
   });
   
   
   // No need to get this multiple times, should just cache this info
+  console.log('Getting static data');
   var runes = GetRuneInfo();
   var champions = GetChampionInfo();
   var items = GetItemInfo();
 
-
   var results = matchDetails.map((match) => {
+    console.log('Parsing details for match...');
     result = {};
     var participantIdentity = match.participantIdentities.find((id) => id.player.accountId  === summoner.accountId);
     var participant = match.participants.find((id) => id.participantId === participantIdentity.participantId);
@@ -41,6 +47,7 @@ app.get('/api/lastTenMatches/:summonerName', (req, res) => {
     return result;
   });
 
+  console.log('All data searches complete.');
   res.send({express: results});
 })
 
@@ -99,13 +106,13 @@ function GetSummoner(summonerName) {
   xhttp.send();
 
   var response = JSON.parse(xhttp.responseText);
-
+  
   return response;
 }
 
 function GetSummonerMatches(summonerId) {
   //var path = `lol/match/v3/matchlists/by-account/${summonerId}?api_key=${apiKey}&endIndex=10`;
-  var path = `lol/match/v3/matchlists/by-account/${summonerId}?api_key=${apiKey}&endIndex=2`;
+  var path = `lol/match/v3/matchlists/by-account/${summonerId}?api_key=${apiKey}&endIndex=10`;
   var url = `${riotUrl}/${path}`;
 
   xhttp.open("GET", url, false);

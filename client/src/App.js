@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import Matches from './Components/Matches';
+import SummonerInput from './Components/SummonerInput';
 
 async function callApi(path) {
   const response = await fetch(path);
@@ -13,22 +14,39 @@ async function callApi(path) {
 }
 
 class App extends Component {
-  state = {
-    matchInfo: [{}]
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      summonerName: '',
+      showSpinner: false,
+      matchInfo: null
+    };
+  }
 
-
-  componentDidMount() {
-    callApi(`/api/lastTenMatches/Avein`)
+  searchSummoner(name) {
+    this.setState({ showSpinner: true });
+    this.setState({ summonerName: name });
+    this.setState({ matchInfo: null });
+    callApi(`/api/lastTenMatches/${name}`)
       .then(res => this.setState({ matchInfo: res.express }))
+      .then(() => this.setState({ showSpinner: false }))
       .catch(err => console.log(err));
   }
 
   render() {
+    let spinner;
+    if (this.state.showSpinner) {
+      spinner = <img alt="" src="loader.gif" />;
+    }
+    else {
+      spinner = null;
+    }
+
     return (
       <div className="App">
-        <p> {this.state.test} </p>
+        <SummonerInput nameHandler={this.searchSummoner.bind(this)} />
         <Matches data={this.state.matchInfo} />
+        {spinner}
       </div>
     );
   }
